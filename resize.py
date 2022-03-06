@@ -6,6 +6,8 @@ import sys
 import sys
 from turtle import width
 from colorama import init
+from termcolor import colored
+from numpy import size
 init(strip=not sys.stdout.isatty()) # strip colors if stdout is redirected
 from termcolor import cprint 
 from pyfiglet import figlet_format
@@ -34,8 +36,9 @@ def resize(fp: str, scale: Union[float, int]) -> Image:
 @click.option("-p", "--photo",help="photo Path")
 @click.option("-s", "--scale", default=50, help="Percent as whole number to scale. eg. 40")
 @click.option("-q", "--quiet", default=False, is_flag=True, help="Suppresses stdout.")
+@click.option("-c", "--convert", default=False, is_flag=True, help="Convert image format")
 
-def main(photo: str, scale: int, quiet: bool):
+def main(photo: str, scale: int, quiet: bool,convert:bool):
     if photo:
         for image in (images := Path().glob(photo)):
             if image.suffix not in SUPPORTED_FILE_TYPES:
@@ -52,11 +55,39 @@ def main(photo: str, scale: int, quiet: bool):
         if images == []:
             print(f"No images found at search photo '{photo}'.")
             return
+    elif convert:
+        apple(convert)
     else:
         print('No photo provided.'
               '\n\n'
               'Usage: resize.py -p <photo_path> -s <scale>')
+def apple(convert:bool):
+    def png():
+        n=input('ENTER NAME OF IMAGE WITH .jpg: ')
+        im = Image.open(n).convert("RGB")
+        im.save("converted_png.png","png")
 
+    def JPEG():
+        n=input('ENTER NAME OF IMAGE WITH .png: ')
+        im = Image.open(n)
+        im.save("converted_jpeg.jpg","jpeg")
+
+
+
+    inp='y'
+    while inp=='y':
+        print(colored(' 1:CONVERT TO PNG\n 2:CONVERT TO JPEG\n 0:QUIT','green'))
+
+        inp1=int(input())
+
+        if inp1==1:
+            png()
+            print('converted to png sucessfully;')
+        elif inp1==2:
+            JPEG()
+            print('converted to jpg sucessfully')
+        elif inp1==0:
+            inp='n'
 if __name__ == '__main__':
     cprint(figlet_format('Co-Coder Resizer!'),
        'yellow', attrs=['bold'])
